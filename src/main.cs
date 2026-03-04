@@ -18,7 +18,7 @@ class Program
             {
                 if (Helpers.GetExecutableCommandPath(commandParts.Command) != null)
                 {
-                    Process.Start(new ProcessStartInfo
+                    var process = Process.Start(new ProcessStartInfo
                     {
                         FileName = commandParts.Command,
                         Arguments = string.Join(' ', commandParts.Arguments),
@@ -26,6 +26,8 @@ class Program
                         RedirectStandardError = false,
                         RedirectStandardOutput = false,
                     });
+
+                    process?.WaitForExit();
 
                     continue;
                 }
