@@ -6,10 +6,10 @@ public class Shell
 
     private string _currentDirectory = Environment.CurrentDirectory;
     private string _currentCommand = string.Empty;
-    private IEnumerable<string> _currentArguments = [];
+    private List<string> _currentArguments = [];
 
     public string Command => _currentCommand;
-    public IEnumerable<string> Arguments => _currentArguments;
+    public IReadOnlyList<string> Arguments => _currentArguments;
     public string CurrentDirectory
     {
         get => _currentDirectory;
@@ -54,7 +54,6 @@ public class Shell
         var parser = new Parser();
         parser.Tokenize(input);
 
-
         _currentCommand = parser.Tokens.FirstOrDefault() ?? string.Empty;
         _currentArguments = [.. parser.Tokens.Skip(1)];
     }
@@ -75,14 +74,14 @@ public class Shell
             {
                 if (Helpers.GetExecutableCommandPath(_currentCommand) != null)
                 {
-                    var process = Process.Start(new ProcessStartInfo
+                    var processInfo = new ProcessStartInfo(_currentCommand, Arguments)
                     {
-                        FileName = _currentCommand,
-                        Arguments = string.Join(' ', _currentArguments),
                         UseShellExecute = false,
                         RedirectStandardError = false,
-                        RedirectStandardOutput = false,
-                    });
+                        RedirectStandardOutput = false
+                    };
+
+                    var process = Process.Start(processInfo);
 
                     process?.WaitForExit();
                 }
