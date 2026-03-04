@@ -2,7 +2,7 @@ class Program
 {
     static void Main()
     {
-        IReadOnlyList<string> validCommands = ["clear"];
+        IReadOnlyList<string> validCommands = ["clear", "exit"];
 
         while (true)
         {
@@ -13,6 +13,15 @@ class Program
             if (!validCommands.Contains(input))
             {
                 Console.WriteLine($"{input}: command not found");
+            }
+
+            switch (input)
+            {
+                case "clear":
+                    Console.Clear();
+                    break;
+                case "exit":
+                    return;
             }
         }
     }
