@@ -23,39 +23,12 @@ public static class CommandActions
 
         if (cmd == null)
         {
-            var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-
-            var entries = path.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
-                .Where(Directory.Exists)
-                .Distinct();
-
-            foreach (var entry in entries)
+            var executablePath = Helpers.GetExecutableCommandPath(cmdName);
+            
+            if (executablePath != null)
             {
-                var files = Directory.GetFiles(entry, cmdName);
-
-                foreach (var filePath in files)
-                {
-                    if (Path.GetFileName(filePath) == cmdName)
-                    {
-                        if (Environment.OSVersion.Platform == PlatformID.Unix)
-                        {
-#pragma warning disable CA1416 // Validate platform compatibility
-                            if (IsExecutableUnix(filePath))
-                            {
-                                Console.WriteLine($"{cmdName} is {filePath}");
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            if (IsExecutableWindows(filePath))
-                            {
-                                Console.WriteLine($"{cmdName} is {filePath}");
-                                return;
-                            }
-                        }
-                    }
-                }
+                Console.WriteLine($"{cmdName} is {executablePath}");
+                return;
             }
 
             Console.WriteLine($"{cmdName}: not found");
@@ -68,28 +41,4 @@ public static class CommandActions
         }
     }
 
-    private static bool IsExecutableUnix(string path)
-    {
-        if (!File.Exists(path))
-            return false;
-
-        var mode = File.GetUnixFileMode(path);
-
-        return mode.HasFlag(UnixFileMode.UserExecute) ||
-               mode.HasFlag(UnixFileMode.GroupExecute) ||
-               mode.HasFlag(UnixFileMode.OtherExecute);
     }
-
-    private static bool IsExecutableWindows(string path)
-    {
-        if (!File.Exists(path))
-            return false;
-
-        var executableExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-        ".exe", ".bat", ".cmd", ".com", ".ps1"
-    };
-
-        return executableExtensions.Contains(Path.GetExtension(path));
-    }
-}
