@@ -14,12 +14,13 @@ public class Shell
         set
         {
             bool isAbsolutePath = Path.IsPathRooted(value);
-            string newPath = isAbsolutePath ? value : Path.Combine(_currentDirectory, value);
+            string newPath = isAbsolutePath 
+                ? value 
+                : Path.GetFullPath(Path.Combine(_currentDirectory, value));
 
-            if (Directory.Exists(value))
+            if (Directory.Exists(newPath))
             {
-                _currentDirectory = value;
-                Environment.CurrentDirectory = value;
+                _currentDirectory = newPath;
             }
             else
             {

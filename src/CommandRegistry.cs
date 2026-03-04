@@ -20,7 +20,7 @@ public static class CommandRegistry
     public static readonly Command Type = Command.Create("type",
                                                          "Prints the type of the provided command.",
                                                          CommandType.BuiltIn,
-                                                         shell => CommandActions.ExecuteType(shell.Arguments.FirstOrDefault() ?? string.Empty));
+                                                         shell => CommandActions.ExecuteType(shell.Arguments.FirstOrDefault()));
 
     public static readonly Command Pwd = Command.Create("pwd",
                                                         "Prints the current working directory.",
