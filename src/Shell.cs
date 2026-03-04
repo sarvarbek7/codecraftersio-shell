@@ -51,10 +51,12 @@ public class Shell
             return;
         }
 
-        var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var parser = new Parser();
+        parser.Tokenize(input);
 
-        _currentCommand = parts[0];
-        _currentArguments = [.. parts.Skip(1)];
+
+        _currentCommand = parser.Tokens.FirstOrDefault() ?? string.Empty;
+        _currentArguments = [.. parser.Tokens.Skip(1)];
     }
 
     public void Run()
