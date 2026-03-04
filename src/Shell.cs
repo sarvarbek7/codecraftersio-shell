@@ -2,6 +2,8 @@ using System.Diagnostics;
 
 public class Shell
 {
+    private string _homeAlias = "~";
+
     private string _currentDirectory = Environment.CurrentDirectory;
     private string _currentCommand = string.Empty;
     private IEnumerable<string> _currentArguments = [];
@@ -13,6 +15,11 @@ public class Shell
         get => _currentDirectory;
         set
         {
+            if (value.StartsWith(_homeAlias))
+            {
+                value = value.Replace(_homeAlias, Environment.GetEnvironmentVariable("HOME") ?? string.Empty);
+            }
+
             bool isAbsolutePath = Path.IsPathRooted(value);
             string newPath = isAbsolutePath
                 ? value
