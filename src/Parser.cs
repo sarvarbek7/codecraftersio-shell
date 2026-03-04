@@ -23,13 +23,13 @@ public class Parser
 
         foreach (char c in input)
         {
-            if (c == SINGLE_QUOTE[0])
+            if (c == SINGLE_QUOTE[0] && !doubleQuoteOpen)
             {
                 singleQuoteOpen = !singleQuoteOpen;
                 continue;
             }
 
-            if (c == DOUBLE_QUOTE[0])
+            if (c == DOUBLE_QUOTE[0] && !singleQuoteOpen)
             {
                 doubleQuoteOpen = !doubleQuoteOpen;
                 continue;
