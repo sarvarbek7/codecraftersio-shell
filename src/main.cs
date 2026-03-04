@@ -2,7 +2,6 @@ class Program
 {
     static void Main()
     {
-        IReadOnlyList<string> validCommands = ["clear", "exit", "echo"];
 
         while (true)
         {
@@ -10,25 +9,49 @@ class Program
 
             var input = Console.ReadLine() ?? string.Empty;
 
-            var commandParts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            var command = commandParts[0];
+            var commandParts = CommandExtractor.ExtractCommand(input);
 
-            if (!validCommands.Contains(command))
+            if (!Commands.IsValidCommand(commandParts.Command))
             {
-                Console.WriteLine($"{input}: command not found");
+                Console.WriteLine($"{commandParts.Command}: command not found");
+                continue;
             }
 
-
-            switch (commandParts[0])
+            if (commandParts.Command == Commands.Exit.Name)
             {
-                case "clear":
-                    Console.Clear();
-                    break;
-                case "exit":
-                    return;
-                case "echo":
-                    Console.WriteLine(string.Join(' ', commandParts.Skip(1)));
-                    break;
+                break;
+            }
+            else if (commandParts.Command == Commands.Clear.Name)
+            {
+                Console.Clear();
+            }
+            else if (commandParts.Command == Commands.Echo.Name)
+            {
+                Console.WriteLine(string.Join(' ', commandParts.Arguments));
+            }
+            else if (commandParts.Command == Commands.Type.Name)
+            {
+                var cmdName = commandParts.Arguments.FirstOrDefault();
+                if (cmdName == null)
+                {
+                    Console.WriteLine("type: missing argument");
+                    continue;
+                }
+
+                var cmd = Commands.GetCommand(cmdName);
+                if (cmd == null)
+                {
+                    Console.WriteLine($"{cmdName}: not found");
+                    continue;
+                }
+                if (cmd.Type == CommandType.BuiltIn)
+                {
+                    Console.WriteLine($"{cmdName} is a shell builtin");
+                }
+                else
+                {
+                    Console.WriteLine($"{cmdName} is an external command");
+                }
             }
         }
     }
