@@ -6,12 +6,10 @@ public static class CommandActions
 
     public static void ExecuteEcho(IEnumerable<string> args) => Console.WriteLine(string.Join(' ', args));
 
-    public static void ExecuteType(string cmdName)
+    public static void ExecuteType(string? cmdName)
     {
-
-        if (cmdName == null)
+        if (string.IsNullOrWhiteSpace(cmdName))
         {
-            Console.WriteLine("type: missing argument");
             return;
         }
 
