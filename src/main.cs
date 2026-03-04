@@ -22,9 +22,11 @@ class Program
                     {
                         FileName = commandParts.Command,
                         Arguments = string.Join(' ', commandParts.Arguments),
-                        UseShellExecute = true
+                        UseShellExecute = false,
+                        RedirectStandardError = false,
+                        RedirectStandardOutput = false,
                     });
-                    
+
                     continue;
                 }
 
