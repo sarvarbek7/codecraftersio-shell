@@ -1,6 +1,3 @@
-using System.Security.AccessControl;
-using Microsoft.VisualBasic;
-
 public static class CommandActions
 {
     public static void ExecuteClear() => Console.Clear();
@@ -24,7 +21,7 @@ public static class CommandActions
         if (cmd == null)
         {
             var executablePath = Helpers.GetExecutableCommandPath(cmdName);
-            
+
             if (executablePath != null)
             {
                 Console.WriteLine($"{cmdName} is {executablePath}");
@@ -41,4 +38,5 @@ public static class CommandActions
         }
     }
 
-    }
+    public static void ExecutePwd() => Console.WriteLine(Directory.GetCurrentDirectory());
+}

@@ -42,7 +42,7 @@ public static class Commands
                                                           "Clears the console.",
                                                           CommandType.BuiltIn,
                                                           args => CommandActions.ExecuteClear());
-    
+
     public static readonly Command Exit = Command.Create("exit",
                                                          "Exits the shell.",
                                                          CommandType.BuiltIn,
@@ -52,18 +52,23 @@ public static class Commands
                                                          "Prints the provided arguments to the console.",
                                                          CommandType.BuiltIn,
                                                          args => CommandActions.ExecuteEcho(args));
-    
+
     public static readonly Command Type = Command.Create("type",
                                                          "Prints the type of the provided command.",
                                                          CommandType.BuiltIn,
                                                          args => CommandActions.ExecuteType(args));
 
+    public static readonly Command Pwd = Command.Create("pwd",
+                                                        "Prints the current working directory.",
+                                                        CommandType.BuiltIn,
+                                                        args => CommandActions.ExecutePwd());
     static Commands()
     {
         _commands.Add(Clear);
         _commands.Add(Exit);
         _commands.Add(Echo);
         _commands.Add(Type);
+        _commands.Add(Pwd);
     }
 
     public static Command? GetCommand(string name) => _commands.FirstOrDefault(c => c.Name == name);
