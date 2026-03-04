@@ -6,9 +6,8 @@ public static class CommandActions
 
     public static void ExecuteEcho(IEnumerable<string> args) => Console.WriteLine(string.Join(' ', args));
 
-    public static void ExecuteType(IEnumerable<string> args)
+    public static void ExecuteType(string cmdName)
     {
-        var cmdName = args.FirstOrDefault();
 
         if (cmdName == null)
         {
@@ -16,7 +15,7 @@ public static class CommandActions
             return;
         }
 
-        var cmd = Commands.GetCommand(cmdName);
+        var cmd = CommandRegistry.GetCommand(cmdName);
 
         if (cmd == null)
         {
@@ -38,5 +37,16 @@ public static class CommandActions
         }
     }
 
-    public static void ExecutePwd() => Console.WriteLine(Directory.GetCurrentDirectory());
+    public static void ExecutePwd(Shell shell) => Console.WriteLine(shell.CurrentDirectory);
+
+    public static void ExecuteCd(Shell shell, string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return;
+        }
+
+        shell.CurrentDirectory = path;
+
+    }
 }
