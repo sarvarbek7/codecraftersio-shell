@@ -2,9 +2,6 @@ using System.Text;
 
 public class Parser
 {
-    private static string SINGLE_QUOTE = "'";
-    private static string DOUBLE_QUOTE = "\"";
-
     private readonly List<string> _tokens = [];
 
     public List<string> Tokens => _tokens;
@@ -18,24 +15,43 @@ public class Parser
 
         bool singleQuoteOpen = false;
         bool doubleQuoteOpen = false;
+        bool backslashEncountered = false;
 
         var currentToken = new StringBuilder();
 
         foreach (char c in input)
         {
-            if (c == SINGLE_QUOTE[0] && !doubleQuoteOpen)
+            if (c.IsBackslash())
+            {
+                if (singleQuoteOpen || doubleQuoteOpen)
+                {
+                    currentToken.Append(c);
+                    continue;
+                }
+                else if (backslashEncountered)
+                {
+                    currentToken.Append(c);
+                    backslashEncountered = false;
+                    continue;
+                }
+                else
+                {
+                    backslashEncountered = true;
+                    continue;
+                }
+
+            }
+            else if (c.IsSingleQuote() && !doubleQuoteOpen && !backslashEncountered)
             {
                 singleQuoteOpen = !singleQuoteOpen;
                 continue;
             }
-
-            if (c == DOUBLE_QUOTE[0] && !singleQuoteOpen)
+            else if (c.IsDoubleQuote() && !singleQuoteOpen && !backslashEncountered)
             {
                 doubleQuoteOpen = !doubleQuoteOpen;
                 continue;
             }
-
-            if (char.IsWhiteSpace(c) && !(singleQuoteOpen || doubleQuoteOpen))
+            else if (char.IsWhiteSpace(c) && !(singleQuoteOpen || doubleQuoteOpen || backslashEncountered))
             {
                 var token = currentToken.ToString();
 
@@ -49,6 +65,11 @@ public class Parser
             }
 
             currentToken.Append(c);
+
+            if (backslashEncountered)
+            {
+                backslashEncountered = false;
+            }
         }
 
         var lastToken = currentToken.ToString();
