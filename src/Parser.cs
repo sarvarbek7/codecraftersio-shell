@@ -19,8 +19,10 @@ public class Parser
 
         var currentToken = new StringBuilder();
 
-        foreach (char c in input)
+        for (int i = 0; i < input.Length; i++)
         {
+            char c = input[i];
+
             if (c.IsBackslash())
             {
                 if (singleQuoteOpen || doubleQuoteOpen)
@@ -79,6 +81,78 @@ public class Parser
             _tokens.Add(lastToken);
 
             currentToken.Clear();
+        }
+    }
+
+    public void TokenizeV2(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return;
+        }
+
+        bool singleQuoteOpen = false;
+        bool doubleQuoteOpen = false;
+        bool backslashEncountered = false;
+
+        var currentTokenStringBuilder = new StringBuilder();
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            char c = input[i];
+
+            if (c.IsSingleQuote())
+            {
+                if (singleQuoteOpen)
+                {
+                    singleQuoteOpen = false;
+                }
+                else if (doubleQuoteOpen)
+                {
+                    currentTokenStringBuilder.Append(c);
+                }
+                else if (backslashEncountered)
+                {
+                    currentTokenStringBuilder.Append(c);
+                    backslashEncountered = false;
+                }
+                else
+                {
+                    singleQuoteOpen = true;
+                }
+            }
+            else if (c.IsDoubleQuote())
+            {
+                if (doubleQuoteOpen)
+                {
+                    if (backslashEncountered)
+                    {
+                        currentTokenStringBuilder.Remove(currentTokenStringBuilder.Length - 1, 1);
+                        currentTokenStringBuilder.Append(c);
+                        backslashEncountered = false;
+                    }
+                    else
+                    {
+                        doubleQuoteOpen = false;
+                    }
+                }
+                else if (singleQuoteOpen)
+                {
+                    currentTokenStringBuilder.Append(c);
+                } else if (backslashEncountered)
+                {
+                    currentTokenStringBuilder.Append(c);
+                    backslashEncountered = false;
+                }
+                else
+                {
+                    doubleQuoteOpen = true;
+                }
+            }
+            else if (c.IsWhitespace())
+            {
+                
+            }
         }
     }
 }
