@@ -52,7 +52,7 @@ public class Shell
         }
 
         var parser = new Parser();
-        parser.TokenizeV2(input);
+        parser.Tokenize(input);
 
         _currentCommand = parser.Tokens.FirstOrDefault() ?? string.Empty;
         _currentArguments = [.. parser.Tokens.Skip(1)];
