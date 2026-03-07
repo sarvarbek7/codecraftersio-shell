@@ -139,7 +139,8 @@ public class Parser
                 else if (singleQuoteOpen)
                 {
                     currentTokenStringBuilder.Append(c);
-                } else if (backslashEncountered)
+                }
+                else if (backslashEncountered)
                 {
                     currentTokenStringBuilder.Append(c);
                     backslashEncountered = false;
@@ -149,10 +150,107 @@ public class Parser
                     doubleQuoteOpen = true;
                 }
             }
+            else if (c.IsBackslash())
+            {
+                if (singleQuoteOpen)
+                {
+                    currentTokenStringBuilder.Append(c);
+                }
+                else if (doubleQuoteOpen)
+                {
+                    if (backslashEncountered)
+                    {
+                        backslashEncountered = false;
+                    }
+                    else
+                    {
+                        currentTokenStringBuilder.Append(c);
+                        backslashEncountered = true;
+                    }
+                }
+                else if (backslashEncountered)
+                {
+                    currentTokenStringBuilder.Append(c);
+                    backslashEncountered = false;
+                }
+                else
+                {
+                    backslashEncountered = true;
+                }
+            }
             else if (c.IsWhitespace())
             {
-                
+                if (singleQuoteOpen)
+                {
+                    currentTokenStringBuilder.Append(c);
+                }
+                else if (doubleQuoteOpen)
+                {
+                    currentTokenStringBuilder.Append(c);
+                }
+                else if (backslashEncountered)
+                {
+                    currentTokenStringBuilder.Append(c);
+                    backslashEncountered = false;
+                }
+                else
+                {
+                    var token = currentTokenStringBuilder.ToString();
+
+                    if (!string.IsNullOrWhiteSpace(token))
+                    {
+                        _tokens.Add(token);
+
+                        currentTokenStringBuilder.Clear();
+                    }
+                }
             }
+            else
+            {
+                if (singleQuoteOpen)
+                {
+                    currentTokenStringBuilder.Append(c);
+                }
+                else if (doubleQuoteOpen)
+                {
+                    if (backslashEncountered)
+                    {
+                        backslashEncountered = false;
+
+                        if (c.IsBackslashEscapedInDoubleQuotes())
+                        {
+                            currentTokenStringBuilder.Remove(currentTokenStringBuilder.Length - 1, 1);
+                            currentTokenStringBuilder.Append(c);
+                        }
+                        else
+                        {
+                            currentTokenStringBuilder.Append(c);
+                        }
+                    }
+                    else
+                    {
+                        currentTokenStringBuilder.Append(c);
+                    }
+                }
+                else if (backslashEncountered)
+                {
+                    currentTokenStringBuilder.Append(c);
+                    backslashEncountered = false;
+                }
+                else
+                {
+                    currentTokenStringBuilder.Append(c);
+                }
+            }
+        }
+   
+         var lastToken = currentTokenStringBuilder.ToString();
+
+        if (!string.IsNullOrWhiteSpace(lastToken))
+        {
+            _tokens.Add(lastToken);
+
+            currentTokenStringBuilder.Clear();
         }
     }
 }
